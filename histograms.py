@@ -1,84 +1,85 @@
+import pandas as pd
+import pandas
+from typing import Dict, List
+from openpyxl.styles import Alignment
 from tkinter.tix import NoteBook
 from matplotlib.pyplot import title
 from matplotlib.pyplot import legend
 import plotly.express as px
-import matplotlib
-import plotly 
-import pandas 
 import numpy as np
+from plotly import graph_objs as go
 from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
-init_notebook_mode(connected=True)
-import matplotlib.pyplot as plt
-import doctest
-import plotly.offline as offline
-from selenium import webdriver
 
 
-init_notebook_mode()
-xlsx_name = "C:/Users/pc/.vscode/gitwork/histograms/excel.xlsx"
-excel_data=pandas.read_excel('C:/Users/pc/.vscode/gitwork/histograms/excel.xlsx')
-def read_xlsx( name_of_file: xlsx_name) -> pandas.DataFrame:
+data = {'ВТП Казани, тыс. руб.': [674739900.0, 748722900.0, 773031100.0, 798154610.75, 824094635.6, 850877711.26, 878531236.88], 
+'Добавленная стоимость, тыс. руб.': [191057445.0, 221584931.0, 226103515.0, 230716026.71, 235422633.65, 240225255.38, 245125850.59], 
+'ДС Обрабатывающие производства, тыс. руб.': [75373868.0, 80169194.0, 76066267.0, 78783598.344, 79958359.172, 79850189.785, 81156818.408],
+'ДС Строительство, тыс. руб.': [8376613.0, 9553660.0, 8194075.0, 8888142.345, 9065600.551, 8888954.769, 9131323.671],
+'ДС Транспортировка и хранение, тыс. руб.': [26272378.0, 35407329.0, 2987596.0, 22157415.832, 20690880.642, 15470346.997, 19884660.344],
+'ДС Оптовая и розничная торговля, тыс. руб.': [19963824.0, 25665497.0, 36181429.0, 27718999.183, 30453953.188, 32137036.174, 30691239.965],
+'ДС Деятельность в области информатизации и связи, тыс. руб.': [6646511.0, 9461344.0, 10263705.0, 8946153.853, 9756847.568, 9857412.822, 9709393.347]}
+data_df = pd.DataFrame(data)
+start_year = 2017
+
+
+def get_axis_x(data_df: pandas.DataFrame,start_year: int) -> list:
     '''
-        Функция читает содержимое файла с расширением XLSX и преобразует его
-        содержимое в переменую типа pandas.DataFrame
-        На вход она получает имя файла с таблицей
-        На выход поступает переменная, содержащая в себе таблицу в виде pandas.DataFrame 
-        
-        >>> read_xlsx("doctest_excel_correct")
-        {}
+    Функция формирует список со значениями(axis_x) для оси Х(горизонтальной)
 
+    На вход функции подается Data Frame со значениями бюджета и категориями,
+    а также год начала отчетного периода
+
+    На выход функция подает готовые значения для оси Х (горизонтальная) в виде отчетного периода  в годах 
     '''
-    excel_data=pandas.read_excel(xlsx_name) #прочитали фаил с таблицей 
-    data_df=pandas.DataFrame(excel_data)
-    return data_df
+    axis_x= ""
+    counter=0
+    for key in data_df.keys():
+        axis_x += str(start_year+counter) + " "
+        counter = counter + 1
+    return axis_x
 
 
-def make_values_axisx(data_df: pandas.DataFrame) -> list:
-    years = "" 
-    list_for_years=""
-    i=0
-    standart= "55555"
-    data_df.items()
-    for col_name, data_df in data_df.items(): #Цикл для помещения в years времени(года в виде 2017, 2018, 2019 и т.д), которое будет анализироваться  
-        col_name_in_str=str(col_name)
-        if (col_name_in_str!='NoN' and col_name_in_str < standart ):
-         col_name_in_str=str(col_name)
-         years+=col_name_in_str
-    len_years=len(years)
-    for j in range(0,7): # Цикл для разделения времени (сделать их читабельными)
-        years_for_j=years[i:i+4]
-        list_for_years+=(years_for_j + ",")
-        i+=4
-    split_sheet_year=(list_for_years.split(","))
-    split_sheet_year.pop(-1)
-    return(split_sheet_year) 
+# def make_suitable_dataframe(data_df: pandas.DataFrame, axis_x: list) -> pandas.DataFrame:
+#     '''
+#     Фукция добавляет данные для оси X(горизонтальной) в Data Frame
+#     для использования в функции визуализации графиков  
+
+#     На вход функции подается Data Frame со значениями бюджета и категориями,
+#     а также значения для оси Х (горизонтальной) 
+
+#     На выход подается новый Data Frame объект с полным набором данных,
+#     необходимым для построения графиков
+#     '''
+
+#     #added_dict = {"Период": axis_x.split()}
+#     #added_dataframe=pd.DataFrame(added_dict)
+#     #data_df_for_histogram=data_df.join(added_dataframe)
+#     data_df["Период"] = [axis_x.split()]
+#     return data_df
 
 
-def make_histograms(data_df: pandas.DataFrame) -> None:
-    split_sheet_year = make_values_axisx(data_df)
-    df_no_nan= data_df[data_df["Unnamed: 0"].notna()] # избавились от NaN в превом столбце
-    titles_for_histogram = df_no_nan.iloc[0:11,0]
-    axis_x = list(split_sheet_year)
+def make_histogram(data_df: pandas.DataFrame, axis_x: list):
+    '''
+    Функция формирует значения для построения графиков
+    и строит графики, сохраняя их с заданным расширением 
+    
+    На вход функции подается Data Frame объект и значения для оси Х (горизонтальной)
+    '''
+    
+    data_df["Период"] = axis_x.split()  
+    for key in data_df.keys():
+        if key == 'Период': continue
+        fig = go.Figure(go.Bar(data_df, x = axis_x , y = data_df[key]))#, color=["c"]*3+["r"]*4, title=key))
+        fig.update_layout(
+        xaxis_title_text='Период (*красный- прогнозируемый год)',
+        yaxis_title_text= key,
+        bargap=0.1,
+        template='simple_white') 
+        fig.write_html(key + '.html',
+               include_plotlyjs='cdn',
+               full_html=False,
+               include_mathjax='cdn')   
 
-    for i in range(0, len(axis_x)):
-        if i > 2:
-          axis_x[i] = axis_x[i] + "*"
-          
-    for counter in range(0, len(df_no_nan)): 
-        value_for_check=list(df_no_nan.iloc[int(counter),2:])
 
-        if int(value_for_check[3])> 10:
-            y_pos= np.arange(len(split_sheet_year))
-            axis_y=list(df_no_nan.iloc[int(counter),2:])
-            title=str(df_no_nan.iloc[int(counter),0])
-            plt.title(title + "\n(*-прогнозируемый год)")
-            fig = plt.bar(axis_x,axis_y,align="center",color=["c"]*3+["r"]*4)
-            plt.show()
-            #plt.savefig('images/histogram ' + title + '.pdf')
-           
-
-            
-data_df = read_xlsx(xlsx_name)
-split_sheet_year = make_values_axisx(data_df)
-print(split_sheet_year)
-make_histograms(data_df)
+axis_x = get_axis_x(data_df, start_year)
+make_histogram(data_df,axis_x)

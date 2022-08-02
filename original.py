@@ -23,7 +23,6 @@ from typing import Dict, List
 import openpyxl
 from openpyxl.styles import Alignment
 import plotly.express as px
-import doctest 
 
 document_inner = pd.read_excel("C:/Users/pc/.vscode/gitwork/histograms/doctest_files/data.xlsx")
 years_count = 4  # Количество лет для прогноза

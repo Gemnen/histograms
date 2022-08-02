@@ -285,6 +285,7 @@ def get_axis_x(data_df: pandas.DataFrame,start_year: int) -> List:
     ['2017', '2018', '2019', '2020', '2021', '2022', '2023']
     '''
     axis_x = [str(i) for i in range(start_year, start_year+len(data_df))]
+    data_df["Период"] = axis_x 
 
     return axis_x
 
@@ -295,8 +296,6 @@ def make_histogram(data_df: pandas.DataFrame, axis_x: List):
     и строит графики, сохраняя их с заданным расширением 
     На вход функции подается Data Frame объект и значения для оси Х (горизонтальной)
     '''
-    
-    data_df["Период"] = axis_x 
 
     for key in data_df.keys():
         if key == 'Период': continue

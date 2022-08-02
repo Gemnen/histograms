@@ -24,7 +24,8 @@ import openpyxl
 from openpyxl.styles import Alignment
 import plotly.express as px
 
-document_inner = pd.read_excel("C:/Users/pc/.vscode/gitwork/histograms/doctest_files/data.xlsx")
+document_inner = pd.read_excel(
+    "C:/Users/pc/.vscode/gitwork/histograms/doctest_files/data.xlsx")
 years_count = 4  # Количество лет для прогноза
 
 CORRECT_TITLES = ['ВТП Казани, тыс. руб.', 'Добавленная стоимость, тыс. руб.',
@@ -44,21 +45,21 @@ def check_params(data_frame_object: pd.DataFrame) -> bool:
                    all items from CORRECT_TITLES
             False - otherwise
 
-        >>> df = pd.read_excel('wrong1.xlsx')
+        >>> df = pd.read_excel('doctest_files\wrong1.xlsx')
         >>> check_params(df)
         С параметром на 7 строке ошибка
         False
 
-        >>> df = pd.read_excel('wrong3.xlsx')
+        >>> df = pd.read_excel('doctest_files\wrong3.xlsx')
         >>> check_params(df)
         С параметром на 4 строке ошибка
         False
 
-        >>> df = pd.read_excel('correct1.xlsx')
+        >>> df = pd.read_excel('doctest_files\correct1.xlsx')
         >>> check_params(df)
         True
 
-        >>> df = pd.read_excel('correct2.xlsx')
+        >>> df = pd.read_excel('doctest_files\correct2.xlsx')
         >>> check_params(df)
         True
     '''
@@ -87,17 +88,17 @@ def is_empty(data_frame_object: pd.DataFrame) -> bool:
         where this mistake are. Else, if there aren't
         any problems, function returns False.
 
-        >>> df = pd.read_excel('correct1.xlsx')
+        >>> df = pd.read_excel('doctest_files\correct1.xlsx')
         >>> is_empty(df)
         False
 
-        >>> df = pd.read_excel('wrong1.xlsx')
+        >>> df = pd.read_excel('doctest_files\wrong1.xlsx')
         >>> is_empty(df)
         Ошибка в значении  ДС Транспортировка и хранение, тыс. руб. за  Y-3 год
         Ошибка в значении  ДС Транспортировка и хранение, тыс. руб. за  Y-2 год
         True
 
-        >>> df = pd.read_excel('wrong2.xlsx')
+        >>> df = pd.read_excel('doctest_files\wrong2.xlsx')
         >>> is_empty(df)
         Ошибка в значении  ДС Обрабатывающие производства, тыс. руб. за  Y-1 год
         Ошибка в значении  ДС Транспортировка и хранение, тыс. руб. за  Y-2 год
@@ -169,7 +170,6 @@ def get_analyze(data):
     return delta_VDST
 
 
-
 def get_data_excel_format(delta_VDST, DS):
     '''
         Возвращает список строк с необходмым заполнением excel документа данными о ДС
@@ -216,7 +216,7 @@ def save_to_excel(start_year, DS, delta_VDST):
     ws = wb.active
 
     for i, value in enumerate(['', ''] + [start_year +
-                          i for i in range(len(DS[CORRECT_TITLES[0]]))], 1):
+                                          i for i in range(len(DS[CORRECT_TITLES[0]]))], 1):
         ws.cell(row=1, column=i).value = value
 
     for i, row in enumerate(get_data_excel_format(delta_VDST, DS), 2):
@@ -273,14 +273,16 @@ def add_axis_x(data_df: pd.DataFrame, start_year: int) -> List:
     >>> start_year = 2017
     >>> data_df = pd.DataFrame(dict) 
     >>> add_axis_x(data_df,start_year)
+    >>> data_df
        ВТП Казани, тыс. руб.  Добавленная стоимость, тыс. руб. Период
     0            674739900.0                       191057445.0   2017
     1            748722900.0                       221584931.0   2018
     2            773031100.0                       226103515.0   2019
     '''
     axis_x = [str(i) for i in range(start_year, start_year+len(data_df))]
-    data_df["Период"] = axis_x   
-    print(data_df)
+    data_df["Период"] = axis_x
+    
+
 
 def make_histogram(data_df: pd.DataFrame):
     '''
@@ -290,18 +292,20 @@ def make_histogram(data_df: pd.DataFrame):
     '''
 
     for key in data_df.keys():
-        if key == 'Период': continue
-        fig = px.histogram(data_df, x="Период", y=key, color=["c"]*3+["r"]*4, title=key)
+        if key == 'Период':
+            continue
+        fig = px.histogram(data_df, x="Период", y=key,
+                           color=["c"]*3+["r"]*4, title=key)
         fig.update_layout(
-        xaxis_title_text = 'Период (*красный - прогнозируемый год)',
-        yaxis_title_text = key,
-        bargap = 0.1,
-        template = 'simple_white') 
+            xaxis_title_text='Период (*красный - прогнозируемый год)',
+            yaxis_title_text=key,
+            bargap=0.1,
+            template='simple_white')
         fig.write_html(key + '.html',
-               include_plotlyjs='cdn',
-               full_html=False,
-               include_mathjax='cdn')             
-    
+                       include_plotlyjs='cdn',
+                       full_html=False,
+                       include_mathjax='cdn')
+
 
 if check_params(document_inner) and not is_empty(document_inner):
     data_df = document_inner.set_index('Наименование').T
@@ -309,7 +313,7 @@ if check_params(document_inner) and not is_empty(document_inner):
             for item in data_df.to_dict().items()}
     data = get_prognos(data)
     save_to_excel(int((document_inner.columns)[
-                    1]), data, get_analyze(data))
+        1]), data, get_analyze(data))
 
 data_df = pd.DataFrame(data)
 start_year = int((document_inner.columns)[1])

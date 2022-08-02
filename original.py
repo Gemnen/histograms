@@ -35,20 +35,6 @@ import numpy as np
 from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
 import matplotlib.pyplot as plt
 import doctest 
-import pandas as pd
-from typing import Dict, List
-import openpyxl
-from openpyxl.styles import Alignment
-import pandas
-import openpyxl
-from tkinter.tix import NoteBook
-from matplotlib.pyplot import title
-from matplotlib.pyplot import legend
-import plotly.express as px
-import matplotlib
-import plotly
-import numpy as np
-from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
 init_notebook_mode(connected=True)
 #!/usr/bin/python
 

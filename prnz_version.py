@@ -280,30 +280,32 @@ def get_prognos(data):
     return data
 
 
-def get_axis_x(data_df: pd.DataFrame,start_year: int) -> List:
+def add_axis_x(data_df: pd.DataFrame, start_year: int) -> List:
     '''
     Функция формирует список со значениями(axis_x) для оси Х(горизонтальной)
+    и добавляет его в Data Frame 
     На вход функции подается Data Frame со значениями бюджета и категориями,
     а также год начала отчетного периода
-    На выход функция подает готовые значения для оси Х (горизонтальная) в виде отчетного периода  в годах 
+    На выход функция подает обновленный Data Frame объект 
 
-    >>> dict = {'ВТП Казани, тыс. руб.': [674739900.0, 748722900.0, 773031100.0, 798154610.75, 824094635.6, 850877711.26, 878531236.88], 'Добавленная стоимость, тыс. руб.': [191057445.0, 221584931.0, 226103515.0, 230716026.71, 235422633.65, 240225255.38, 245125850.59], 'ДС Обрабатывающие производства, тыс. руб.': [75373868.0, 80169194.0, 76066267.0, 78783598.344, 79958359.172, 79850189.785, 81156818.408], 'ДС Строительство, тыс. руб.': [8376613.0, 9553660.0, 8194075.0, 8888142.345, 9065600.551, 8888954.769, 9131323.671], 'ДС Транспортировка и хранение, тыс. руб.': [26272378.0, 35407329.0, 2987596.0, 22157415.832, 20690880.642, 15470346.997, 19884660.344], 'ДС Оптовая и розничная торговля, тыс. руб.': [19963824.0, 25665497.0, 36181429.0, 27718999.183, 30453953.188, 32137036.174, 30691239.965], 'ДС Деятельность в области информатизации и связи, тыс. руб.': [6646511.0, 9461344.0, 10263705.0, 8946153.853, 9756847.568, 9857412.822, 9709393.347]}
+    >>> dict = {'ВТП Казани, тыс. руб.': [674739900.0, 748722900.0, 773031100.0], 'Добавленная стоимость, тыс. руб.': [191057445.0, 221584931.0, 226103515.0]}
     >>> start_year = 2017
     >>> data_df = pd.DataFrame(dict) 
-    >>> get_axis_x(data_df,start_year)
-    ['2017', '2018', '2019', '2020', '2021', '2022', '2023']
+    >>> add_axis_x(data_df,start_year)
+       ВТП Казани, тыс. руб.  Добавленная стоимость, тыс. руб. Период
+    0            674739900.0                       191057445.0   2017
+    1            748722900.0                       221584931.0   2018
+    2            773031100.0                       226103515.0   2019
     '''
     axis_x = [str(i) for i in range(start_year, start_year+len(data_df))]
-    data_df["Период"] = axis_x 
+    data_df["Период"] = axis_x   
+    print(data_df)
 
-    return axis_x
-
-
-def make_histogram(data_df: pd.DataFrame, axis_x: List):
+def make_histogram(data_df: pd.DataFrame):
     '''
     Функция формирует значения для построения графиков
     и строит графики, сохраняя их с заданным расширением 
-    На вход функции подается Data Frame объект и значения для оси Х (горизонтальной)
+    На вход функции подается Data Frame объект 
     '''
 
     for key in data_df.keys():
@@ -327,10 +329,11 @@ if check_params(document_inner) and not is_empty(document_inner):
     data = get_prognos(data)
     save_to_excel(int((document_inner.columns)[
                     1]), data, get_analyze(data))
+
 data_df = pd.DataFrame(data)
 start_year = int((document_inner.columns)[1])
-axis_x = get_axis_x(data_df, start_year)
-dataOutput = make_histogram(data_df, axis_x)
+add_axis_x(data_df,start_year)
+dataOutput = make_histogram(data_df)
 daplib.save_packages(name="Графики", fileList=daplib.get_fileobjects_list(dataOutput))
 files = daplib.get_fileobjects_list(['excel.xlsx'])
 daplib.save_packages(name="Обработанные данные", fileList=files)

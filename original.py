@@ -74,7 +74,6 @@ def check_params(data_frame_object: pd.DataFrame) -> bool:
     '''
     found_mistake = False
 
-    # user one letter for index, for example, i
     for index_tt, title in enumerate(data_frame_object.values):
         if title[0] not in CORRECT_TITLES:
             print(f'С параметром на {index_tt + 2} строке ошибка')

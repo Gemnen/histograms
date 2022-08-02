@@ -313,5 +313,5 @@ if check_params(document_inner) and not is_empty(document_inner):
 
 data_df = pd.DataFrame(data)
 start_year = int((document_inner.columns)[1])
-add_axis_x(data_df,start_year)
+add_axis_x(data_df, start_year)
 make_histogram(data_df)
